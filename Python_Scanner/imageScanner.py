@@ -198,7 +198,7 @@ def extract_metadata(result_text, image_path):
                         f"Could not find value for random stat {cur_random_stat_name}"
                     )
         else:
-            logging.DEBUG(f"Could not find random stat name in:" + result_text[i])
+            logging.debug(f"Could not find random stat name in:" + result_text[i])
     return {
         "set_name": set_name,
         "partition_number": partition_number,
@@ -284,9 +284,11 @@ def correct_metadata(metadata):
         metadata["random_stats"][i] = (closest_stat, metadata["random_stats"][i][1])
 
     # correct the main stat value
-    main_stats_progression, sub_stats_progression = get_rarity_stats(
-        metadata["drive_rarity"]
-    )
+    rarity_stats = get_rarity_stats(metadata["drive_rarity"])
+    if rarity_stats is None: # if we can't get the rarity stats, log an error and skip the main stat correction since we need the rarity stats to correct it
+        logging.error(f"Unknown rarity {metadata['drive_rarity']}, skipping metadata correction")
+        return
+    main_stats_progression, sub_stats_progression = rarity_stats
     expected_main_stat_value = get_expected_main_stat_value(
         metadata["drive_base_stat"],
         main_stats_progression,
@@ -352,7 +354,7 @@ def correct_metadata(metadata):
 
     except Exception as e:
         print("Error while correcting sub stats, proceeding uncorrected: ", e)
-        logging.WARNING(
+        logging.warning(
             f"Error while correcting sub stats, proceeding uncorrected: {e}"
         )
 
