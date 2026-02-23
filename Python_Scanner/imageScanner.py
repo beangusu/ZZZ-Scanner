@@ -5,6 +5,7 @@ import os
 import json
 import logging
 import pytesseract
+import shutil
 from strsimpy import Cosine  # used for string cosine similarity
 from preprocess_images import preprocess_image
 from validMetadata import (
@@ -26,8 +27,22 @@ from validMetadata import (
 debug = False
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# set the path to the tesseract-ocr folder
-tesseract_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Tesseract-OCR") + "\\tesseract.exe"
+# Check if Tesseract is bundled with the app (compiled exe)
+bundled_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Tesseract-OCR", "tesseract.exe")
+# Check if Tesseract is installed system-wide and in PATH
+path_tesseract = shutil.which("tesseract")
+# Common Windows install location
+default_install = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+if os.path.exists(bundled_path):
+    tesseract_path = bundled_path
+elif path_tesseract:
+    tesseract_path = path_tesseract
+elif os.path.exists(default_install):
+    tesseract_path = default_install
+else:
+    raise FileNotFoundError("Tesseract not found! Please install it from https://github.com/UB-Mannheim/tesseract/wiki")
+
 pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 
@@ -115,14 +130,14 @@ def extract_metadata(result_text, image_path):
     # clean out any text other than numbers and slashes and trim the string
     drive_level = re.sub("[^0-9/]", "", drive_level).strip()
     drive_max_level = drive_level.split("/")[1].strip()
-    drive_current_level = re.sub("\D", "", drive_level.split("/")[0])
+    drive_current_level = re.sub(r"\D", "", drive_level.split("/")[0])
     # convert a current level of 00 to 0, etc
     if drive_current_level[0] == "0":
         drive_current_level = "0"
     # base stat is found after the "Main Stat" line
     drive_base_stat_combined = result_text[find_index_in_list("Main", result_text) + 1]
 
-    drive_base_stat = re.sub("[\d%]", "", drive_base_stat_combined).strip()
+    drive_base_stat = re.sub(r"[\d%]", "", drive_base_stat_combined).strip()
 
     # if there are no numbers in the base stat, don't try to grab it, we'll rely on correcting it later
     drive_base_stat_number_missing = False
