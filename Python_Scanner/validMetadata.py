@@ -404,6 +404,8 @@ def validate_sub_stat_value(sub_stats, sub_stats_progression):
                     )
                 else:
                     sub_stat_name += "%"  # added for the progression comparison
+        if sub_stat_value == "" or sub_stat_value is None:
+            return (False, "Missing sub stat value")
         sub_stats[i] = (sub_stat_name, float(sub_stat_value))
 
     # first, make sure all sub stats are valid
