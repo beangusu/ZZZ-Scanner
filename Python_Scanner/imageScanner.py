@@ -311,7 +311,6 @@ def correct_metadata(metadata):
         # if the expected sub stats are different from the input sub stats, correct it, and log it
         # expected sub stats are in a list of (stat_name, stat_value) tuples
         expected_sub_stats_names = [stat[0] for stat in expected_sub_stat_values]
-        corrected_sub_stats_ignore_list = []
         
         # Keep track of which stats we've seen to handle duplicates
         for i, (sub_stat_name, sub_stat_value) in enumerate(metadata["random_stats"]):
