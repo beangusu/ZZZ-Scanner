@@ -28,7 +28,7 @@ def prepareForScan():
     # find any old log files in the scan_output directory
     old_log_files = []
     for file in os.listdir("scan_output"):
-        if re.match(r"old_log_\d+.txt", file):
+        if re.match(r"old_log_\d+\.txt", file):
             old_log_files.append(file)
 
     # sort the old log files by the number suffix, smallest to largest (eg: old_log_1.txt, old_log_2.txt, etc)
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     print("Overall Time: ", time.time() - overallStartTime)
 
 
-    log_path = os.path.join("Python_Scanner", "scan_output", "log.txt")
+    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scan_output", "log.txt")
     # Calculate error rate
     if os.path.exists(log_path):
         try:
