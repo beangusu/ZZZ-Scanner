@@ -444,6 +444,8 @@ def validate_sub_stat_value(sub_stats, sub_stats_progression):
             if stat_name == sub_stat_name:
                 base_value = value
                 break
+        if base_value is None:
+            return (False, "Sub stat not found in progression table")
         expected_rank_up_value = base_value + (rank_up_number * base_value)
         tolerance = 0.05
         if abs(sub_stat_value - expected_rank_up_value) > tolerance:
@@ -513,6 +515,8 @@ def get_expected_sub_stat_values(sub_stats, sub_stats_progression):
                 if stat_name == sub_stat_name:
                     base_value = value
                     break
+                if base_value is None:
+                    return (False, "Sub stat not found in progression table")
             expected_value = base_value + (rank_up_number * base_value)
 
             # if the sub stat name is not of the percentage type, we need to round the expected value to the nearest whole number
@@ -588,7 +592,10 @@ def validate_disk_drive(
         )  # check if the main stat is valid for the partition
 
     # check if the main stat value is valid
-    main_stats_progression, sub_stats_progression = get_rarity_stats(rarity)
+    rarity_stats = get_rarity_stats(rarity)
+    if rarity_stats is None:
+        return (False, "Invalid rarity")
+    main_stats_progression, sub_stats_progression = rarity_stats
     main_stat_value_valid, error = validate_main_stat_value(
         main_stat_name, main_stat_value, main_stats_progression, curLevel, maxLevel
     )
