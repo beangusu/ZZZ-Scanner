@@ -332,9 +332,11 @@ def correct_metadata(metadata):
             # if it isn't, throw an error since it should be in the expected sub stats
             if sub_stat_name in expected_sub_stats_names:
                 # find the expected value for the sub stat
-                expected_sub_stat_value = find_string_in_list(
-                    sub_stat_name, expected_sub_stat_values
-                )[1]
+                found = find_string_in_list(sub_stat_name, expected_sub_stat_values)
+                if found is None:
+                    logging.warning(f"Could not find expected value for sub stat {sub_stat_name}, skipping correction")
+                    continue
+                expected_sub_stat_value = found[1]
                 
                 if sub_stat_value.replace("%", "") != expected_sub_stat_value.replace("%", ""):
                     logging.warning(

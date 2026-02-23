@@ -54,7 +54,7 @@ def prepareForScan():
     # refresh the old_log_files list with the new names so we can delete the oldest ones if needed
     old_log_files = []
     for file in os.listdir("scan_output"):
-        if re.match(r"old_log_\d+.txt", file):
+        if re.match(r"old_log_\d+\.txt", file):
             old_log_files.append(file)
 
     old_log_files.sort(key=lambda x: int(re.search(r"\d+", x).group()))
