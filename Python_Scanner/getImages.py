@@ -66,6 +66,7 @@ def getToEquipmentScreen(queue: Queue, pageLoadTime):
 
 
     # press the equipment button to get to the equipment screen
+    equipmentButton = None # Error handling in case the equipment button is not found for whatever reason, log the error and exit the program
     try:
         equipmentButton = pyautogui.locateOnScreen(target, confidence=0.8)
     except Exception as e:
