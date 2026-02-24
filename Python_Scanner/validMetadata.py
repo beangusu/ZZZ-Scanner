@@ -517,8 +517,8 @@ def get_expected_sub_stat_values(sub_stats, sub_stats_progression):
                 if stat_name == sub_stat_name:
                     base_value = value
                     break
-                if base_value is None:
-                    return (False, "Sub stat not found in progression table")
+            if base_value is None:
+                return (False, "Sub stat not found in progression table")
             expected_value = base_value + (rank_up_number * base_value)
 
             # if the sub stat name is not of the percentage type, we need to round the expected value to the nearest whole number
@@ -540,6 +540,8 @@ def get_expected_sub_stat_values(sub_stats, sub_stats_progression):
                 if stat_name == sub_stat_name:
                     base_value = value
                     break
+            if base_value is None:
+                return (False, "Sub stat not found in progression table")
             expected_value = base_value
 
             # For ATK/HP/DEF stats, determine if this should be percentage based on other instances

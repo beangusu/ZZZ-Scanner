@@ -415,7 +415,11 @@ def imageScanner(queue: Queue):
                 scan_data.append(result_metadata)
             else:
                 logging.error(
-                    f"Disk drive #{imagenum} failed validation, skipping: {error_message}"
+                    f"Disk drive #{imagenum} failed validation, skipping: {error_message} "
+                    f"| Set: {result_metadata.get('set_name', '?')} "
+                    f"| Partition: {result_metadata.get('partition_number', '?')} "
+                    f"| Main Stat: {result_metadata.get('drive_base_stat', '?')} "
+                    f"| Level: {result_metadata.get('drive_current_level', '?')}/{result_metadata.get('drive_max_level', '?')}"
                 )
             logging.info(f"Finished processing disk drive #{imagenum}")
             consecutive_errors = 0

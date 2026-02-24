@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean Dist",
+            "type": "shell",
+            "command": "if (Test-Path '${workspaceFolder}\\Python_Scanner\\dist\\ZZZ-Scanner-Tesseract') { Remove-Item -Recurse -Force '${workspaceFolder}\\Python_Scanner\\dist\\ZZZ-Scanner-Tesseract' }",
+            "options": {
+                "cwd": "${workspaceFolder}/Python_Scanner"
+            },
+            "group": "build"
+        },
+        {
+            "label": "Build Python Scanner",
+            "type": "shell",
+            "command": "pyinstaller ZZZ-Scanner-Tesseract.spec",
+            "options": {
+                "cwd": "${workspaceFolder}/Python_Scanner"
+            },
+            "group": "build"
+        },
+        {
+            "label": "Copy Scanner to Frontend",
+            "type": "shell",
+            "command": "robocopy dist/ZZZ-Scanner-Tesseract ../ZZZ-Frontend/ZZZ-Scanner-Tesseract /E /IS /IT; if ($LASTEXITCODE -le 1) { exit 0 }",
+            "options": {
+                "cwd": "${workspaceFolder}/Python_Scanner"
+            },
+            "group": "build"
+        },
+        {
+            "label": "Build Frontend",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder}/ZZZ-Frontend",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": ["/C"]
+                }
+            },
+            "group": "build"
+        },
+        {
+            "label": "Build All",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Clean Dist",
+                "Build Python Scanner",
+                "Copy Scanner to Frontend",
+                "Build Frontend"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

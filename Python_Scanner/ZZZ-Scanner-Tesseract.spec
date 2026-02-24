@@ -1,11 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-
 a = Analysis(
-    ['C:\\Users\\samee\\OneDrive\\Documents\\GitHub\\ZZZ-Drive-Disk-Scanner\\Python_Scanner\\orchestrator.py'],
+    [os.path.join(SPECPATH, 'orchestrator.py')],
     pathex=[],
     binaries=[],
-    datas=[('C:\\Users\\samee\\OneDrive\\Documents\\GitHub\\ZZZ-Drive-Disk-Scanner\\Python_Scanner\\Target_Images', 'Target_Images/'), ('C:\\Users\\samee\\OneDrive\\Documents\\GitHub\\ZZZ-Drive-Disk-Scanner\\Python_Scanner\\Tesseract-OCR', 'Tesseract-OCR/')],
+    datas=[
+        (os.path.join(SPECPATH, 'Target_Images'), 'Target_Images/'),
+        (os.path.join(SPECPATH, 'Tesseract-OCR'), 'Tesseract-OCR/')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -33,8 +35,8 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     uac_admin=True,
-    icon=['C:\\Users\\samee\\OneDrive\\Documents\\GitHub\\ZZZ-Drive-Disk-Scanner\\ZZZ-Frontend\\renderer\\public\\images\\ZZZ-Scanner-Icon.ico'],
-    manifest='C:\\Users\\samee\\OneDrive\\Documents\\GitHub\\ZZZ-Drive-Disk-Scanner\\Python_Scanner\\autopytoexe\\manifest.xml',
+    icon=[os.path.join(SPECPATH, '..', 'ZZZ-Frontend', 'renderer', 'public', 'images', 'ZZZ-Scanner-Icon.ico')],
+    manifest=os.path.join(SPECPATH, 'autopytoexe', 'manifest.xml'),
 )
 coll = COLLECT(
     exe,
