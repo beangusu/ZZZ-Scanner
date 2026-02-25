@@ -33,7 +33,7 @@ let mainWindow;
 
   mainWindow = createWindow("main", {
     width: 1000,
-    height: 600,
+    height: 750,
     autoHideMenuBar: true,
     icon: path.join(
       __dirname,
@@ -57,16 +57,17 @@ let mainWindow;
 app.on("window-all-closed", () => {
   app.quit();
 });
-//input expected in form { discScan: number, pageLoad: number }
+//input expected in form { discScan: number, pageLoad: number, keepImages: boolean }
 ipcMain.on("start-scan", (event, arg) => {
   console.log("Received start-scan event with args: ", arg);
   console.log("Scanner path:", pathToScanner);
   console.log("Path exists:", fs.existsSync(pathToScanner));
-  const { discScan, pageLoad } = arg;
-  //run the scanner exe with the provided arguments in order of pageLoad, discScan
+  const { discScan, pageLoad, keepImages } = arg;
+  //run the scanner exe with the provided arguments in order of pageLoad, discScan, keepImages
   const scannerProcess = require("child_process").spawn(pathToScanner, [
     pageLoad,
     discScan,
+    keepImages ? "1" : "0",
   ]);
 
   //Wait for then watch the log file for changes so we can respond to scanner events
@@ -100,11 +101,20 @@ ipcMain.on("start-scan", (event, arg) => {
               mainWindow.focus();
             } else if (recentLines.includes("Writing scan data to file")) {
               console.log("Scan complete: ", lastLine);
-              event.reply("scan-complete", {
-                message: lastLine,
-              });
-              //open the scan output folder so the user can grab the scan data
-              //switch back to the main window and focus it and then do so for the shell
+
+              // parse failed discs from log for display in UI
+              const failedDiscs = lines
+                .filter((line) => line.includes("ERROR") && line.includes("failed validation"))
+                .map((line) => {
+                  const set = line.match(/Set: ([^|]+)/)?.[1]?.trim() ?? "Unknown";
+                  const partition = line.match(/Partition: ([^|]+)/)?.[1]?.trim() ?? "?";
+                  const mainStat = line.match(/Main Stat: ([^|]+)/)?.[1]?.trim() ?? "?";
+                  const level = line.match(/Level: ([^|]+)/)?.[1]?.trim() ?? "?";
+                  const reason = line.match(/skipping: ([^|]+)/)?.[1]?.trim() ?? "Unknown error";
+                  return { set, partition, mainStat, level, reason };
+                });
+
+              event.reply("scan-complete", { message: lastLine, failedDiscs });
               mainWindow.show();
               mainWindow.focus();
               shell.showItemInFolder(pathToScanOutput + "/scan_data.json");

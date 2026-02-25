@@ -89,10 +89,12 @@ if __name__ == "__main__":
 
     pageLoadTime = 2
     discScanTime = 0.25
+    keep_images = False
 
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 3:
         pageLoadTime = float(sys.argv[1])
         discScanTime = float(sys.argv[2])
+        keep_images = len(sys.argv) > 3 and sys.argv[3] == "1"
 
     image_queue = Queue()
     GetImagesStartTime = time.time()
@@ -141,7 +143,15 @@ if __name__ == "__main__":
         if not get_images_process.is_alive() and not image_scanner_process.is_alive():
             break
 
-    cleanupImages()
+    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scan_output", "log.txt")
+
+    # auto-keep images if any discs failed, so the user can review them without rescanning
+    log_has_errors = os.path.exists(log_path) and any(
+        'ERROR' in line for line in open(log_path)
+    )
+
+    if not keep_images and not log_has_errors:
+        cleanupImages()
 
     os.chdir(current_directory)
 
@@ -150,7 +160,6 @@ if __name__ == "__main__":
     print("Overall Time: ", time.time() - overallStartTime)
 
 
-    log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scan_output", "log.txt")
     # Calculate error rate
     if os.path.exists(log_path):
         try:

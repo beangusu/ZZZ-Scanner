@@ -3,7 +3,7 @@ import React from "react";
 import { useAtom } from "jotai";
 import Drawer from "react-modern-drawer";
 
-import { discScanAtom, pageLoadAtom } from "../atoms";
+import { discScanAtom, pageLoadAtom, keepImagesAtom } from "../atoms";
 
 //Drawer Styles
 import "react-modern-drawer/dist/index.css";
@@ -27,6 +27,8 @@ export function SettingsDrawer() {
   ) => {
     setPageLoadSpeed(parseInt(event.target.value));
   };
+
+  const [keepImages, setKeepImages] = useAtom(keepImagesAtom);
 
   return (
     <>
@@ -83,6 +85,28 @@ export function SettingsDrawer() {
             <span>3s</span>
             <span>4s</span>
             <span>5s</span>
+          </div>
+
+          {/* debug mode toggle */}
+          <div className="flex flex-col items-center mt-4 px-4 w-full">
+            <div className="w-full border-t border-white border-opacity-20 mb-4" />
+            <span className="text-base font-DOS mb-3">Debug</span>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={keepImages}
+                onChange={(e) => setKeepImages(e.target.checked)}
+              />
+              <span className="text-xs font-DOS text-gray-300 text-left">
+                Keep Scan Images
+              </span>
+            </label>
+            {keepImages && (
+              <span className="text-xs font-DOS text-yellow-400 mt-2 text-center px-2">
+                Scan images will be saved to scan_input/ after scanning
+              </span>
+            )}
           </div>
         </div>
       </Drawer>
