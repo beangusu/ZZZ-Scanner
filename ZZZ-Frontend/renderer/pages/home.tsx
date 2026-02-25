@@ -36,7 +36,7 @@ export default function HomePage() {
 
   React.useEffect(() => {
     window.ipc.on("scan-error", (event: { message: string }) => {
-      console.log("Scan error event: ", event);
+      console.log("Scan Error event: ", event);
       setFinalLine(event.message);
       setScanComplete(false);
       setFailedDiscs([]);
@@ -50,7 +50,7 @@ export default function HomePage() {
   }, []);
 
   const handleStartScan = () => {
-    console.log("Starting scan...");
+    console.log("Starting Scan...");
     setScanComplete(false);
     setFailedDiscs([]);
     setFinalLine("");
@@ -73,7 +73,7 @@ export default function HomePage() {
         {scanComplete && failedDiscs.length > 0 && (
           <div className="mt-6 w-full max-w-2xl px-4">
             <span className="font-DOS text-sm text-yellow-400">
-              ⚠ {failedDiscs.length} disc{failedDiscs.length > 1 ? "s" : ""} could not be scanned. Add the discs listed below manually to the optimizer:
+              ⚠ {failedDiscs.length} disc{failedDiscs.length > 1 ? "s" : ""} could not be scanned. Refer to the log in scan_output/ for details:
             </span>
             <div className="mt-2 max-h-40 overflow-y-auto border border-yellow-400 border-opacity-40 rounded">
               {failedDiscs.map((disc, i) => (

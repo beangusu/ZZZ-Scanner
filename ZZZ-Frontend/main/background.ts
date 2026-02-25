@@ -33,7 +33,7 @@ let mainWindow;
 
   mainWindow = createWindow("main", {
     width: 1000,
-    height: 750,
+    height: 800,
     autoHideMenuBar: true,
     icon: path.join(
       __dirname,
@@ -95,12 +95,12 @@ ipcMain.on("start-scan", (event, arg) => {
             const recentLines = lines.slice(-3).join("\n");
 
             if (recentLines.includes("CRITICAL")) {
-              console.log("Scan error: ", lastLine);
+              console.log("Scan Error: ", lastLine);
               event.reply("scan-error", { message: lastLine });
               mainWindow.show();
               mainWindow.focus();
             } else if (recentLines.includes("Writing scan data to file")) {
-              console.log("Scan complete: ", lastLine);
+              console.log("Scan Complete: ", lastLine);
 
               // parse failed discs from log for display in UI
               const failedDiscs = lines
