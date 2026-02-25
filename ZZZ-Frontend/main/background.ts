@@ -83,19 +83,22 @@ ipcMain.on("start-scan", (event, arg) => {
             return;
           }
 
-          const lines = data.split("\n");
-          const newLastLine = lines[lines.length - 2].trim(); //we have an extra empty line at the end of the file
+          const lines = data.split("\n").filter(line => line.trim() !== "");
+          const newLastLine = lines[lines.length - 1].trim();
           //console.log("New last line: ", newLastLine);
 
           if (newLastLine !== lastLine) {
             lastLine = newLastLine;
 
-            if (lastLine.includes("CRITICAL")) {
+            // check last 3 lines in case new log lines were added after the trigger
+            const recentLines = lines.slice(-3).join("\n");
+
+            if (recentLines.includes("CRITICAL")) {
               console.log("Scan error: ", lastLine);
               event.reply("scan-error", { message: lastLine });
               mainWindow.show();
               mainWindow.focus();
-            } else if (lastLine.includes("Writing scan data to file")) {
+            } else if (recentLines.includes("Writing scan data to file")) {
               console.log("Scan complete: ", lastLine);
               event.reply("scan-complete", {
                 message: lastLine,

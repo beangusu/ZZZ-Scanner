@@ -7,6 +7,7 @@ import logging
 import pytesseract
 import shutil
 from strsimpy import Cosine  # used for string cosine similarity
+from convert_to_zod import convert # used for converting scan data to ZOD format
 from preprocess_images import preprocess_image
 from validMetadata import (
     valid_set_names,
@@ -415,7 +416,7 @@ def imageScanner(queue: Queue):
                 scan_data.append(result_metadata)
             else:
                 logging.error(
-                    f"Disk drive #{imagenum} failed validation, skipping: {error_message} "
+                    f"Disk Drive #{imagenum} failed validation, skipping: {error_message} "
                     f"| Set: {result_metadata.get('set_name', '?')} "
                     f"| Partition: {result_metadata.get('partition_number', '?')} "
                     f"| Main Stat: {result_metadata.get('drive_base_stat', '?')} "
@@ -430,10 +431,12 @@ def imageScanner(queue: Queue):
                 print("--------------------------------------------------")
 
     # write the data to a JSON file for later use inside of the scan_output folder
-    logging.info("Finished processing. Writing scan data to file")
+    logging.info("Finished scanning. Writing scan data to file")
     with open("scan_output/scan_data.json", "w") as f:
         json.dump(scan_data, f, indent=4)
-
+    # then export data to ZOD format
+    convert("scan_output/scan_data.json", "scan_output/scan_data_ZOD.json")
+    logging.info("Scanner Finished.")
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
